@@ -12,6 +12,9 @@ services:
       - POSTGRES_USER=portfolio
       - POSTGRES_PASSWORD=ChiBlePortfolio
       - POSTGRES_DB=portfolio
+      - EMAIL_USER=phucchi12112004@gmail.com
+      - EMAIL_PASSWORD=ChiBlePortfolio
+      - JWT_SECRET_KEY=ChiBlePortfolio
     depends_on:
       - db
 

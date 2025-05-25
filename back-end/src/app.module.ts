@@ -6,6 +6,7 @@ import { BlogPostModule } from './blog-post/blog-post.module';
 import { CommentModule } from './comment/comment.module';
 import { HobbyModule } from './hobby/hobby.module';
 import { StudyModule } from './study/study.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { StudyModule } from './study/study.module';
     CommentModule,
     HobbyModule,
     StudyModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
