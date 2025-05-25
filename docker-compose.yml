@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    working_dir: /app
+    ports:
+      - "5000:5000"
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=portfolio
+      - POSTGRES_PASSWORD=ChiBlePortfolio
+      - POSTGRES_DB=portfolio
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=portfolio
+      - POSTGRES_PASSWORD=ChiBlePortfolio
+      - POSTGRES_DB=portfolio
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
