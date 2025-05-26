@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Post, Body, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProjectService } from './project.service';
 import { Project } from '../entities/project.entity';
 
@@ -6,28 +7,17 @@ import { Project } from '../entities/project.entity';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
-  @Get()
-  findAll(): Promise<Project[]> {
-    return this.projectService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string): Promise<Project> {
-    return this.projectService.findOne(+id);
-  }
-
   @Post()
-  create(@Body() project: Project): Promise<Project> {
-    return this.projectService.create(project);
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() project: Partial<Project>): Promise<void> {
-    return this.projectService.update(+id, project);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.projectService.remove(+id);
+  @UseInterceptors(FileInterceptor('thumbnail'))
+  async create(
+    @Body() projectData: Partial<Project>,
+    @UploadedFile() thumbnailFile?: Express.Multer.File,
+  ): Promise<Project> {
+    const { id, ...restProjectData } = projectData;
+    const newProjectData: Project = { 
+      ...(restProjectData as Project), 
+      thumbnail: thumbnailFile as any // Cast as needed or handle appropriately
+    };
+    return this.projectService.create(newProjectData);
   }
 }

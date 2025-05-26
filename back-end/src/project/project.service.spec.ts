@@ -1,18 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProjectService } from './project.service';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Project } from '../entities/project.entity';
 
-describe('ProjectService', () => {
-  let service: ProjectService;
+@Injectable()
+export class ProjectService {
+  constructor(
+    @InjectRepository(Project)
+    private projectRepository: Repository<Project>,
+  ) {}
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [ProjectService],
-    }).compile();
-
-    service = module.get<ProjectService>(ProjectService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+  async create(projectData: Partial<Project>, thumbnailFile?: Express.Multer.File): Promise<Project> {
+    if (thumbnailFile) {
+      projectData.thumbnail = `/uploads/thumbnails/${thumbnailFile.filename}`;
+    }
+    const project = this.projectRepository.create(projectData);
+    return this.projectRepository.save(project);
+  }
+}

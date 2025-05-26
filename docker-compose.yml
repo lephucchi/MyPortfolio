@@ -29,6 +29,17 @@ services:
       - POSTGRES_DB=portfolio
     volumes:
       - pgdata:/var/lib/postgresql/data
+  
+  # frontend:
+  #   build:
+  #     context: ./front-end
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5173:5173"
+  #   environment:
+  #     - NODE_ENV=production
+  #   depends_on:
+  #     - backend
 
 volumes:
   pgdata:
