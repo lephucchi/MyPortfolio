@@ -9,7 +9,7 @@ const Studies: React.FC = () => {
   useEffect(() => {
     const fetchStudies = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/studies');
+        const response = await axios.get('http://backend:5000/studies');
         setStudies(response.data);
       } catch (err: any) {
         setError('Failed to fetch studies');

@@ -10,27 +10,15 @@ export class ProjectService {
     private projectRepository: Repository<Project>,
   ) {}
 
-  findAll(): Promise<Project[]> {
+  async findAll(): Promise<Project[]> {
     return this.projectRepository.find({ relations: ['user'] });
   }
 
-  async findOne(id: number): Promise<Project> {
-    const project = await this.projectRepository.findOne({ where: { id }, relations: ['user'] });
-    if (!project) {
-      throw new Error(`Project with id ${id} not found`);
+  async create(projectData: Partial<Project>, thumbnailFile?: Express.Multer.File): Promise<Project> {
+    if (thumbnailFile) {
+      projectData.thumbnail = `/uploads/thumbnails/${thumbnailFile.filename}`;
     }
-    return project;
-  }
-
-  async create(project: Project): Promise<Project> {
+    const project = this.projectRepository.create(projectData);
     return this.projectRepository.save(project);
-  }
-
-  async update(id: number, project: Partial<Project>): Promise<void> {
-    await this.projectRepository.update(id, project);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.projectRepository.delete(id);
   }
 }

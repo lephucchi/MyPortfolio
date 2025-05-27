@@ -11,7 +11,10 @@ export interface Project {
   id: number
   title: string
   description: string
-  technologies: string
+  technologies?: string
+  githubLink?: string
+  documentation?: string
+  thumbnailUrl?: string
   user: User
   createdAt: string
 }
