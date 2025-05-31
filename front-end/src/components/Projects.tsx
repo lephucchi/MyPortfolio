@@ -113,7 +113,7 @@ const Projects: React.FC = () => {
         formData.append("thumbnail", thumbnail)
       }
       formData.append("title", editingProject.title)
-      formData.append("description", editingProject.description)
+      formData.append("description", editingProject.description || "")
       formData.append("githubLink", editingProject.githubLink || "")
       formData.append("documentation", editingProject.documentation || "")
 
@@ -341,9 +341,9 @@ const Projects: React.FC = () => {
             key={project.id}
             className={`rounded-lg shadow-md overflow-hidden ${isDark ? "bg-gray-800" : "bg-white"}`}
           >
-            {project.thumbnailUrl && (
+            {project.thumbnail && (
               <img
-                src={project.thumbnailUrl || "/placeholder.svg"}
+                src={project.thumbnail || "/placeholder.svg"}
                 alt={project.title}
                 className="w-full h-48 object-cover"
               />

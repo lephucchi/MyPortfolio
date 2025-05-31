@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import { ProjectModule } from './project/project.module';
 import { BlogPostModule } from './blog-post/blog-post.module';
 import { CommentModule } from './comment/comment.module';
 import { HobbyModule } from './hobby/hobby.module';
 import { StudyModule } from './study/study.module';
-import { AuthModule } from './auth/auth.module';
+import { SeedModule } from './database/seeds/seed.module';
+import { ProjectSeed } from './database/seeds/project.seed';
 
 @Module({
   imports: [
@@ -27,6 +30,15 @@ import { AuthModule } from './auth/auth.module';
     HobbyModule,
     StudyModule,
     AuthModule,
+    SeedModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private readonly projectSeed: ProjectSeed) {}
+
+  async onModuleInit() {
+    if (process.env.NODE_ENV !== 'production') {
+      await this.projectSeed.seed();
+    }
+  }
+}

@@ -5,7 +5,18 @@ import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Bật CORS
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://frontend:3000'], // Cho phép các origin này
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true,
+  });
+
+  // Phục vụ file tĩnh (cho thumbnail)
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+
   await app.listen(5000);
 }
 bootstrap();

@@ -1,15 +1,5 @@
 version: '3.8'
 services:
-  frontend:
-    build:
-      context: ./front-end
-      dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-    environment:
-      - NODE_ENV=production
-    depends_on:
-      - backend
   backend:
     build:
       context: ./back-end
@@ -25,6 +15,7 @@ services:
       - EMAIL_USER=phucchi12112004@gmail.com
       - EMAIL_PASSWORD=ChiBlePortfolio
       - JWT_SECRET_KEY=ChiBlePortfolio
+      # - NODE_ENV=development
     depends_on:
       - db
 
