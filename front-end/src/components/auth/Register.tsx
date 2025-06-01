@@ -24,7 +24,7 @@ const Register: React.FC = () => {
       const response = await axios.post('http://localhost:5000/auth/register', form);
       setSuccess(response.data.message);
       setError('');
-      setTimeout(() => navigate('/login'), 2000);
+      setTimeout(() => navigate('/login'), 2000); // Chuyển hướng sau 2 giây
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');
       setSuccess('');

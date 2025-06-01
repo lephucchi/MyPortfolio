@@ -9,7 +9,7 @@ import { CommentModule } from './comment/comment.module';
 import { HobbyModule } from './hobby/hobby.module';
 import { StudyModule } from './study/study.module';
 import { SeedModule } from './database/seeds/seed.module';
-import { ProjectSeed } from './database/seeds/project.seed';
+import { SampleSeed } from './database/seeds/sample.seed';
 
 @Module({
   imports: [
@@ -34,11 +34,11 @@ import { ProjectSeed } from './database/seeds/project.seed';
   ],
 })
 export class AppModule {
-  constructor(private readonly projectSeed: ProjectSeed) {}
+  constructor(private readonly sampleSeed: SampleSeed) {}
 
   async onModuleInit() {
     if (process.env.NODE_ENV !== 'production') {
-      await this.projectSeed.seed();
+      await this.sampleSeed.seed();
     }
   }
 }

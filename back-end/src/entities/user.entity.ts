@@ -5,6 +5,7 @@ import { Comment } from './comment.entity';
 import { Hobby } from './hobby.entity';
 import { Study } from './study.entity';
 
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -16,7 +17,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ default: false })
@@ -25,8 +26,11 @@ export class User {
   @Column({ nullable: true })
   verificationCode: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+  @Column({ default: 'user' })
+  role: string; // 'user' hoặc 'admin'
+
+  @Column({ nullable: true, unique: true })
+  githubId: string; // ID GitHub
 
   @OneToMany(() => Project, (project) => project.user)
   projects: Project[];
@@ -42,4 +46,7 @@ export class User {
 
   @OneToMany(() => Study, (study) => study.author)
   studies: Study[];
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }

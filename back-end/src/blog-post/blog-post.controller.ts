@@ -1,29 +1,37 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get , Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { BlogPostService } from './blog-post.service';
 import { BlogPost } from '../entities/blogpost.entity';
 
 @Controller('blog-posts')
 export class BlogPostController {
-    constructor(private readonly blogPostService: BlogPostService) {}
+  constructor(private readonly blogPostService: BlogPostService) {}
 
-    @Get()
-    finAll() : Promise<BlogPost[]> {
-        return this.blogPostService.findAll();
-    }
-    @Get(':id')
-    findOne(@Param('id') id: string): Promise<BlogPost> {
-        return this.blogPostService.findOne(+id);
-    }
-    @Post()
-    create(@Body() blogPost: BlogPost): Promise<BlogPost> {
-        return this.blogPostService.create(blogPost);
-    }
-    @Put(':id')
-    update(@Param('id') id: string, @Body() blogPost: Partial<BlogPost>): Promise<BlogPost> {
-        return this.blogPostService.update(+id, blogPost);
-    }
-    @Delete(':id')
-    remove(@Param('id') id: string): Promise<void> {
-        return this.blogPostService.remove(+id);
-    }
+  @Get()
+  async findAll(): Promise<BlogPost[]> {
+    return this.blogPostService.findAll();
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async create(@Body() blogData: Partial<BlogPost>): Promise<BlogPost> {
+    return this.blogPostService.create(blogData);
+  }
+
+  @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async update(@Param('id') id: number, @Body() blogData: Partial<BlogPost>): Promise<BlogPost> {
+    return this.blogPostService.update(id, blogData);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async remove(@Param('id') id: number): Promise<void> {
+    return this.blogPostService.remove(id);
+  }
 }

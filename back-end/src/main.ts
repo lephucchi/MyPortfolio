@@ -8,7 +8,7 @@ async function bootstrap() {
 
   // Bật CORS
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://frontend:3000'], // Cho phép các origin này
+    origin: ['http://localhost:5173', 'http://frontend:5173'], // Cho phép các origin này
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,

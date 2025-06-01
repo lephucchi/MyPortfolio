@@ -1,5 +1,17 @@
 version: '3.8'
 services:
+  db:
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=portfolio
+      - POSTGRES_PASSWORD=ChiBlePortfolio
+      - POSTGRES_DB=portfolio
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  
   backend:
     build:
       context: ./back-end
@@ -15,22 +27,8 @@ services:
       - EMAIL_USER=phucchi12112004@gmail.com
       - EMAIL_PASSWORD=ChiBlePortfolio
       - JWT_SECRET_KEY=ChiBlePortfolio
-      # - NODE_ENV=development
     depends_on:
       - db
-
-  db:
-    image: postgres:15
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=portfolio
-      - POSTGRES_PASSWORD=ChiBlePortfolio
-      - POSTGRES_DB=portfolio
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-  
   # frontend:
   #   build:
   #     context: ./front-end

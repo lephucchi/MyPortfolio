@@ -47,16 +47,13 @@ export class AuthService {
     return { message: 'User registered successfully. Please verify your email.' };
   }
 
+  // Trong auth.service.ts
   async login(email: string, password: string): Promise<{ access_token: string }> {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    if (!user.isVerified) {
-      throw new UnauthorizedException('Email not verified');
-    }
-
-    const payload = { email: user.email, sub: user.id };
+    const payload = { email: user.email, sub: user.id, role: user.role };
     return { access_token: this.jwtService.sign(payload) };
   }
 

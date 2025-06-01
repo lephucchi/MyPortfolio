@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 
 interface LoginForm {
   email: string;
@@ -11,7 +10,6 @@ interface LoginForm {
 const Login: React.FC = () => {
   const [form, setForm] = useState<LoginForm>({ email: '', password: '' });
   const [error, setError] = useState<string>('');
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,8 +20,8 @@ const Login: React.FC = () => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5000/auth/login', form);
-      login(response.data.access_token);
-      navigate('/');
+      localStorage.setItem('token', response.data.access_token);
+      navigate('/'); // Chuyển hướng đến trang chính
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
     }
