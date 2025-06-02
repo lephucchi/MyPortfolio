@@ -37,7 +37,7 @@ const Blog: React.FC = () => {
 
   const fetchComments = async (postId: number) => {
     try {
-      const response = await axios.get(`http://localhost:5000/comments/post/${postId}`)
+      const response = await axios.get(`http://localhost:5000/comments/${postId}`)
       setComments((prev) => ({ ...prev, [postId]: response.data }))
     } catch (err: any) {
       console.error("Error fetching comments:", err)
@@ -68,7 +68,7 @@ const Blog: React.FC = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/blog-posts/${editingPost.id}`,
+        `http://localhost:5000/${editingPost.id}`,
         {
           title: editingPost.title,
           content: editingPost.content,
@@ -89,7 +89,7 @@ const Blog: React.FC = () => {
     if (!token || !confirm("Are you sure you want to delete this post?")) return
 
     try {
-      await axios.delete(`http://localhost:5000/blog-posts/${id}`, {
+      await axios.delete(`http://localhost:5000/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       fetchPosts()

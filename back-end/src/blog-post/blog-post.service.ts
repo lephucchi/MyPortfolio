@@ -1,37 +1,49 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { BlogPost } from '../entities/blogpost.entity';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class BlogPostService {
-    constructor(
-        @InjectRepository(BlogPost)
-        private readonly blogPostRepository: Repository<BlogPost>,
-    ) {}
+  constructor(
+    @InjectRepository(BlogPost)
+    private blogPostRepository: Repository<BlogPost>,
+  ) {}
 
-    findAll(): Promise<BlogPost[]> {
-        return this.blogPostRepository.find();
+  async findAll(): Promise<BlogPost[]> {
+    return this.blogPostRepository.find({ relations: ['author', 'comments'] });
+  }
+
+  async findById(id: number): Promise<BlogPost[]> {
+    const blogPost = await this.blogPostRepository.findOne({
+      where: { id },
+      relations: ['author', 'comments'],
+    });
+    if (!blogPost) {
+      throw new NotFoundException('Blog post not found');
     }
-    async findOne(id: number): Promise<BlogPost> {
-        const post = await this.blogPostRepository.findOne({ where: { id } });
-        if (!post) {
-            throw new Error(`Post with ID ${id} not found`);
-        }
-        return post;
+    return [blogPost];
+  }
+
+  async create(blogData: Partial<BlogPost>, user: User): Promise<BlogPost> {
+    const blogPost = this.blogPostRepository.create({ ...blogData, author: user });
+    return this.blogPostRepository.save(blogPost);
+  }
+
+  async update(id: number, blogData: Partial<BlogPost>): Promise<void> {
+    const blogPost = await this.blogPostRepository.findOne({ where: { id } });
+    if (!blogPost) {
+      throw new NotFoundException('Blog post not found');
     }
-    async create(post: Partial<BlogPost>): Promise<BlogPost> {
-        const newPost = this.blogPostRepository.create(post);
-        return this.blogPostRepository.save(newPost);
+    await this.blogPostRepository.update(id, blogData);
+  }
+
+  async remove(id: number): Promise<void> {
+    const blogPost = await this.blogPostRepository.findOne({ where: { id } });
+    if (!blogPost) {
+      throw new NotFoundException('Blog post not found');
     }
-    async update(id: number, post: Partial<BlogPost>): Promise<BlogPost> {
-        await this.blogPostRepository.update(id, post);
-        return this.findOne(id);
-    }
-    async remove(id: number): Promise<void> {
-        const result = await this.blogPostRepository.delete(id);
-        if (result.affected === 0) {
-            throw new Error(`Post with ID ${id} not found`);
-        }
-    }
+    await this.blogPostRepository.delete(id);
+  }
 }

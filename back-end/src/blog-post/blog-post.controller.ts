@@ -1,7 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { BlogPostService } from './blog-post.service';
 import { BlogPost } from '../entities/blogpost.entity';
 
@@ -13,24 +10,23 @@ export class BlogPostController {
   async findAll(): Promise<BlogPost[]> {
     return this.blogPostService.findAll();
   }
+  @Get(':id')
+  async findById(@Param('id') id: number): Promise<BlogPost[]> {
+    return this.blogPostService.findById(id);
+  }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
-  async create(@Body() blogData: Partial<BlogPost>): Promise<BlogPost> {
-    return this.blogPostService.create(blogData);
+  async create(@Body() blogData: Partial<BlogPost>, @Request() req): Promise<BlogPost> {
+    const user = req.user; // Assuming user is attached to the request by an authentication guard
+    return this.blogPostService.create(blogData, user);
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
-  async update(@Param('id') id: number, @Body() blogData: Partial<BlogPost>): Promise<BlogPost> {
+  async update(@Param('id') id: number, @Body() blogData: Partial<BlogPost>): Promise<void> {
     return this.blogPostService.update(id, blogData);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
   async remove(@Param('id') id: number): Promise<void> {
     return this.blogPostService.remove(id);
   }

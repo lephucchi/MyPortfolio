@@ -12,9 +12,9 @@ export class Comment {
 
   @ManyToOne(() => User, (user) => user.comments)
   user: User;
-
-  @ManyToOne(() => BlogPost, (post) => post.comments)
-  post: BlogPost;
+  
+  @ManyToOne(() => BlogPost, (blogPost) => blogPost.comments)
+  blogPost: BlogPost;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

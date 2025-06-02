@@ -95,14 +95,15 @@ const AboutMe: React.FC = () => {
             } backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 group`}
           >
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="relative">
-                <img
-                  src="/placeholder.svg?height=120&width=120"
-                  alt="Profile"
-                  className="w-32 h-32 rounded-2xl object-cover"
-                />
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
-              </div>
+                <div className="relative">
+                  {/* Sửa đường dẫn ảnh - đặt ảnh trong thư mục public */}
+                  <img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ28rk3XxYQvDjSIXGw8BAFyqMbiBzxlTjUng&s" // Đường dẫn tương đối từ thư mục public
+                    alt="Profile"
+                    className="w-32 h-32 rounded-2xl object-cover"
+                  />
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
+                </div>
               <div className="flex-1 text-center md:text-left">
                 <h2 className={`text-2xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>About Me</h2>
                 <p className={`${isDark ? "text-gray-300" : "text-gray-600"} leading-relaxed mb-4`}>

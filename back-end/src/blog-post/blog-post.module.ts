@@ -8,5 +8,6 @@ import { BlogPostService } from './blog-post.service';
   imports: [TypeOrmModule.forFeature([BlogPost])],
   controllers: [BlogPostController],
   providers: [BlogPostService],
+  exports: [TypeOrmModule], // Export TypeOrmModule to make BlogPostRepository available
 })
 export class BlogPostModule {}

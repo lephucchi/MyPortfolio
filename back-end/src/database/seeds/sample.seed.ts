@@ -69,21 +69,27 @@ export class SampleSeed {
       console.log('Seeded 1 sample project');
     }
 
-    // Seed BlogPosts
+    // Seed BlogPosts (chỉ admin tạo)
     let blogPostCount = await this.blogPostRepository.count();
     if (blogPostCount === 0) {
       const sampleBlogPosts = [
         {
           title: 'Getting Started with NestJS',
-          content: 'This blog post explores the basics of NestJS...',
+          content: 'This blog post explores the basics of NestJS, a progressive Node.js framework.',
+          author: adminUser,
+          createdAt: new Date(),
+        },
+        {
+          title: 'Why React Hooks Are Awesome',
+          content: 'React Hooks have revolutionized how we write functional components.',
           author: adminUser,
           createdAt: new Date(),
         },
       ];
       const blogPosts = await this.blogPostRepository.save(sampleBlogPosts);
-      console.log('Seeded 1 sample blog post');
+      console.log('Seeded 2 sample blog posts');
 
-      // Seed Comments
+      // Seed Comments (user thông thường bình luận)
       let commentCount = await this.commentRepository.count();
       if (commentCount === 0) {
         const sampleComments = [
@@ -93,9 +99,15 @@ export class SampleSeed {
             blogPost: blogPosts[0],
             createdAt: new Date(),
           },
+          {
+            content: 'Very informative, loved the examples!',
+            user: sampleUser,
+            blogPost: blogPosts[1],
+            createdAt: new Date(),
+          },
         ];
         await this.commentRepository.save(sampleComments);
-        console.log('Seeded 1 sample comment');
+        console.log('Seeded 2 sample comments');
       }
     }
 

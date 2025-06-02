@@ -1,47 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import { Comment } from '../entities/comment.entity';
+import { BlogPost } from '../entities/blogpost.entity';
+import { User } from '../entities/user.entity';
+
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
+    @InjectRepository(BlogPost)
+    private blogPostRepository: Repository<BlogPost>,
   ) {}
 
-  findAll(): Promise<Comment[]> {
-    return this.commentRepository.find({ relations: ['user', 'post'] });
+  async findByPost(blogPostId: number): Promise<Comment[]> {
+    return this.commentRepository.find({
+      where: { blogPost: { id: blogPostId } },
+      relations: ['user'],
+    });
   }
 
-  async findOne(id: number): Promise<Comment> {
-    const comment = await this.commentRepository.findOne({ where: { id }, relations: ['user', 'post'] });
-    if (!comment) {
-      throw new Error(`Comment with id ${id} not found`);
+  async create(content: string, blogPostId: number, user: User): Promise<Comment> {
+    const blogPost = await this.blogPostRepository.findOne({ where: { id: blogPostId } });
+    if (!blogPost) {
+      throw new Error('Blog post not found');
     }
-    return comment;
-  }
-  async create(comment: Comment): Promise<Comment> {
+    const comment = this.commentRepository.create({ content, user, blogPost });
     return this.commentRepository.save(comment);
-  }
-  async update(id: number, comment: Partial<Comment>): Promise<void> {
-    await this.commentRepository.update(id, comment);
-  }
-  async remove(id: number): Promise<void> {
-    await this.commentRepository.delete(id);
-  }
-  async findByPostId(postId: number): Promise<Comment[]> {
-    return this.commentRepository.find({ where: { post: { id: postId } }, relations: ['user'] });
-  }
-  async findByUserId(userId: number): Promise<Comment[]> {
-    return this.commentRepository.find({ where: { user: { id: userId } }, relations: ['post'] });
-  }
-
-  async findByDateRange(startDate: Date, endDate: Date): Promise<Comment[]> {
-    return this.commentRepository
-      .createQueryBuilder('comment')
-      .where('comment.createdAt BETWEEN :startDate AND :endDate', { startDate, endDate })
-      .getMany();
   }
 }
