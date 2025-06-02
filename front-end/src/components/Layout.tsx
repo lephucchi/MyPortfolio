@@ -74,12 +74,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 {isDark ? <Sun size={20} /> : <Moon size={20} />}
               </button>
               {token ? (
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition-colors duration-200"
-                >
-                  Logout
-                </button>
+                <>
+                  <span className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-800"}`}>
+                    Welcome, {localStorage.getItem("name") || "User"}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition-colors duration-200"
+                  >
+                    Logout
+                  </button>
+                </>
               ) : (
                 <div className="space-x-2">
                   <Link

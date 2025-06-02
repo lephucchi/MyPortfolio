@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.7",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.9.0",
@@ -19,8 +20,10 @@
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-intersection-observer": "^9.16.0",
     "react-router-dom": "^7.6.1",
     "rollup-plugin-node-polyfills": "^0.2.1",
+    "simple-icons": "^15.0.0",
     "stream-browserify": "^3.0.0",
     "util": "^0.12.5"
   },
