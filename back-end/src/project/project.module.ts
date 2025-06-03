@@ -5,10 +5,13 @@ import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { join } from 'path';
+import { AuthModule } from 'src/auth/auth.module';
+import { SharedModule } from 'src/RoleBased/shared/shared.module';
 
 @Module({
   imports: [
+    AuthModule, // Import AuthModule for authentication
+    SharedModule, // Import SharedModule for shared functionalities
     TypeOrmModule.forFeature([Project]),
     MulterModule.register({
       storage: diskStorage({

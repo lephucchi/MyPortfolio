@@ -30,4 +30,11 @@ export class CommentService {
     const comment = this.commentRepository.create({ content, user, blogPost });
     return this.commentRepository.save(comment);
   }
+
+  async update(id: number, content: string): Promise<void> {
+    await this.commentRepository.update(id, { content });
+  }
+  async remove(id: number): Promise<void> {
+    await this.commentRepository.delete(id);
+  }
 }

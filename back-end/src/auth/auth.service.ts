@@ -32,7 +32,7 @@ export class AuthService {
       email,
       password: hashedPassword,
       role: 'user',
-      isVerified: true, // Để đơn giản, bỏ qua email verification
+      isVerified: true, // Bỏ qua email verification
     });
     return this.userRepository.save(user);
   }

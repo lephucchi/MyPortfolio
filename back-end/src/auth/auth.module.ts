@@ -11,7 +11,7 @@ import { User } from '../entities/user.entity';
     TypeOrmModule.forFeature([User]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: process.env.JWT_SECRET_KEY || 'your_jwt_secret', // Lấy từ biến môi trường
+      secret: process.env.JWT_SECRET_KEY || 'ChiBlePortfolio', // Lấy từ biến môi trường
       signOptions: { expiresIn: '1h' },
     }),
   ],
