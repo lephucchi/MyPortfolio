@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
 import axios from "axios"
 import type { BlogPost, Comment } from "../types"
@@ -15,7 +13,8 @@ const Blog: React.FC = () => {
   const [newComment, setNewComment] = useState<{ [key: number]: string }>({})
   const [error, setError] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
-  const { token } = useAuth()
+  const [showAdminPanel, setShowAdminPanel] = useState<boolean>(false)
+  const { token, role } = useAuth()
 
   useEffect(() => {
     fetchPosts()
@@ -29,7 +28,6 @@ const Blog: React.FC = () => {
       setError("")
     } catch (err: any) {
       setError("Failed to fetch blog posts")
-      console.error("Error fetching posts:", err)
     } finally {
       setLoading(false)
     }
@@ -39,9 +37,7 @@ const Blog: React.FC = () => {
     try {
       const response = await axios.get(`http://localhost:5000/comments/${postId}`)
       setComments((prev) => ({ ...prev, [postId]: response.data }))
-    } catch (err: any) {
-      console.error("Error fetching comments:", err)
-    }
+    } catch {}
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,9 +47,11 @@ const Blog: React.FC = () => {
       return
     }
     try {
-      await axios.post("http://localhost:5000/blog-posts", newPost, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await axios.post(
+        "http://localhost:5000/blog-posts",
+        newPost,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       setNewPost({ title: "", content: "" })
       fetchPosts()
       setError("")
@@ -68,14 +66,14 @@ const Blog: React.FC = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/${editingPost.id}`,
+        `http://localhost:5000/blog-posts/${editingPost.id}`,
         {
           title: editingPost.title,
           content: editingPost.content,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       )
       setEditingPost(null)
       fetchPosts()
@@ -89,7 +87,7 @@ const Blog: React.FC = () => {
     if (!token || !confirm("Are you sure you want to delete this post?")) return
 
     try {
-      await axios.delete(`http://localhost:5000/${id}`, {
+      await axios.delete(`http://localhost:5000/blog-posts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       fetchPosts()
@@ -107,11 +105,11 @@ const Blog: React.FC = () => {
         "http://localhost:5000/comments",
         {
           content: newComment[postId],
-          postId: postId,
+          blogPostId: postId,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       )
       setNewComment((prev) => ({ ...prev, [postId]: "" }))
       fetchComments(postId)
@@ -119,6 +117,10 @@ const Blog: React.FC = () => {
       setError(err.response?.data?.message || "Failed to add comment")
     }
   }
+
+  // Chỉ ADMIN mới được phép bật panel quản trị
+  const canEdit = role === "ADMIN" || role === "MODERATOR"
+  const isAdmin = role === "ADMIN"
 
   if (loading) {
     return (
@@ -134,7 +136,20 @@ const Blog: React.FC = () => {
 
       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
 
-      {token && (
+      {/* Nút Edit chỉ hiện với ADMIN */}
+      {isAdmin && (
+        <div className="flex justify-end mb-4">
+          <button
+            className={`px-4 py-2 rounded-md font-semibold ${showAdminPanel ? "bg-gray-500 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+            onClick={() => setShowAdminPanel((prev) => !prev)}
+          >
+            {showAdminPanel ? "Hide Admin Panel" : "Edit"}
+          </button>
+        </div>
+      )}
+
+      {/* Panel quản trị chỉ hiện khi ADMIN bấm Edit */}
+      {token && canEdit && showAdminPanel && (
         <div className="bg-white p-6 rounded-lg shadow-md mb-8">
           <h2 className="text-xl font-semibold mb-4">{editingPost ? "Edit Post" : "Create New Post"}</h2>
           <form onSubmit={editingPost ? handleEdit : handleSubmit}>
@@ -203,7 +218,8 @@ const Blog: React.FC = () => {
                   By: {post.author?.name} • {new Date(post.createdAt).toLocaleDateString()}
                 </p>
               </div>
-              {token && (
+              {/* Chỉ hiện các nút Edit/Delete khi ADMIN bật panel */}
+              {token && canEdit && showAdminPanel && (
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setEditingPost(post)}

@@ -29,12 +29,28 @@ export class SampleSeed {
         name: 'Admin',
         email: 'admin@example.com',
         password: hashedPassword,
-        role: 'admin',
+        role: 'ADMIN',
         isVerified: true,
       });
       await this.userRepository.save(adminUser);
       console.log('Created default admin account');
     }
+
+    //Create a sample GUEST\
+    let guestUser = await this.userRepository.findOne({ where: { email: 'guest@example.com' } });
+    if (!guestUser) {
+      const hashedPassword = await bcrypt.hash('Guest123!', 10);
+      guestUser = this.userRepository.create({
+        name: 'Guest User',
+        email: 'guest@example.com',
+        password: hashedPassword,
+        role: 'GUEST',
+        isVerified: true,
+      });
+      await this.userRepository.save(guestUser);
+      console.log('Created sample guest account');
+    }
+
 
     // Tạo tài khoản user mẫu
     let sampleUser = await this.userRepository.findOne({ where: { email: 'user@example.com' } });
@@ -44,7 +60,7 @@ export class SampleSeed {
         name: 'Sample User',
         email: 'user@example.com',
         password: hashedPassword,
-        role: 'user',
+        role: 'USER',
         isVerified: true,
       });
       await this.userRepository.save(sampleUser);
