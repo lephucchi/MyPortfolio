@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { BlogPostService } from './blog-post.service';
 import { BlogPost } from '../entities/blogpost.entity';
 import { Roles } from '../RoleBased/decorators/roles.decorators';
 import { Role } from '../RoleBased/enum/roles.enum';
 import { AuthGuard } from '../RoleBased/guards/auth.guard';
 import { RoleGuard } from '../RoleBased/guards/role.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('blog-posts')
 export class BlogPostController {
@@ -20,12 +21,21 @@ export class BlogPostController {
   }
 
   @Post()
-  @Roles(Role.ADMIN, Role.MODERATOR) // Only allow ADMIN and MODERATOR roles to create blog posts
-  @UseGuards(AuthGuard, RoleGuard) // Assuming you have AuthGuard and RoleGuard set up
+  @Roles(Role.ADMIN, Role.MODERATOR)
+  @UseGuards(AuthGuard, RoleGuard)
   async create(@Body() blogData: Partial<BlogPost>, @Request() req): Promise<BlogPost> {
-    const user = req.user; // Assuming user is attached to the request by an authentication guard
+    const user = req.user;
     return this.blogPostService.create(blogData, user);
   }
+
+  @Post('upload')
+  @Roles(Role.ADMIN, Role.MODERATOR)
+  @UseGuards(AuthGuard, RoleGuard)
+  @UseInterceptors(FileInterceptor('file')) 
+  async upload(@UploadedFile() file: Express.Multer.File){
+    
+  }
+
 
   @Put(':id')
   @Roles(Role.ADMIN, Role.MODERATOR) // Only allow ADMIN and MODERATOR roles to create blog posts
