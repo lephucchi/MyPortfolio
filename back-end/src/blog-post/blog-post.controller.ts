@@ -33,7 +33,7 @@ export class BlogPostController {
   @UseGuards(AuthGuard, RoleGuard)
   @UseInterceptors(FileInterceptor('file')) 
   async upload(@UploadedFile() file: Express.Multer.File){
-    
+    return this.blogPostService.handleUpLoad(file);
   }
 
 
