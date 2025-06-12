@@ -46,23 +46,24 @@ export class BlogPostService {
     }
     await this.blogPostRepository.delete(id);
   }
-   async handleUpLoad(file: Express.Multer.File) {
-    if (!file) {
-      throw new NotFoundException('File not provided');
-    }
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf', 'video/mp4'];
-    if (!allowedMimeTypes.includes(file.mimetype)) {
-      throw new NotFoundException('Invalid file type');
-    }
-
-    const maxFileSize = 10 * 1024 * 1024; // 10 MB
-    if (file.size > maxFileSize) {
-      throw new NotFoundException('File size exceeds the limit of 10 MB');
-    }
-
-    return {
-      message: 'File uploaded successfully',
-      filePath: file.path, // Assuming the file is stored in a path
-    };
+  
+  async handleUpLoad(file: Express.Multer.File) {
+  if (!file) {
+    throw new NotFoundException('File not provided');
   }
+  const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf', 'video/mp4'];
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    throw new NotFoundException('Invalid file type');
+  }
+
+  const maxFileSize = 10 * 1024 * 1024; // 10 MB
+  if (file.size > maxFileSize) {
+    throw new NotFoundException('File size exceeds the limit of 10 MB');
+  }
+
+  return {
+    message: 'File uploaded successfully',
+    filePath: file.path, // Assuming the file is stored in a path
+  };
+}
 }

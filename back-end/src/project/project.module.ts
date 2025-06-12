@@ -10,17 +10,20 @@ import { SharedModule } from 'src/RoleBased/shared/shared.module';
 
 @Module({
   imports: [
-    AuthModule, // Import AuthModule for authentication
-    SharedModule, // Import SharedModule for shared functionalities
     TypeOrmModule.forFeature([Project]),
+    AuthModule, 
+    SharedModule, 
     MulterModule.register({
       storage: diskStorage({
-        destination: './uploads/thumbnails',
+        destination: './uploads',
         filename: (req, file, cb) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           cb(null, `${file.fieldname}-${uniqueSuffix}${file.originalname}`);
         },
       }),
+      limits: {
+        fileSize: 10 * 1024 * 1024,
+      },
     }),
   ],
   controllers: [ProjectController],
