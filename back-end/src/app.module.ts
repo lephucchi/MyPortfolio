@@ -10,6 +10,7 @@ import { HobbyModule } from './hobby/hobby.module';
 import { StudyModule } from './study/study.module';
 import { SeedModule } from './database/seeds/seed.module';
 import { SampleSeed } from './database/seeds/sample.seed';
+import { ReactionModule } from './reacts/reacts.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SampleSeed } from './database/seeds/sample.seed';
     StudyModule,
     AuthModule,
     SeedModule,
+    ReactionModule,
   ],
 })
 export class AppModule {

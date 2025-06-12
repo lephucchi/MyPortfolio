@@ -4,7 +4,7 @@ import { BlogPost } from './blogpost.entity';
 import { Comment } from './comment.entity';
 import { Hobby } from './hobby.entity';
 import { Study } from './study.entity';
-
+import { Reaction } from '../reacts/entities/react.entity';
 
 @Entity()
 export class User {
@@ -46,6 +46,9 @@ export class User {
 
   @OneToMany(() => Study, (study) => study.author)
   studies: Study[];
+
+  @OneToMany(() => Reaction, (reaction) => reaction.user)
+  reactions: Reaction[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

@@ -1,5 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './user.entity';
+import { Reaction } from '../reacts/entities/react.entity';
+
 
 @Entity('projects')
 export class Project {
@@ -26,6 +28,9 @@ export class Project {
 
   @ManyToOne(() => User, (user) => user.projects)
   user: User;
+  
+  @OneToMany(() => Reaction, (reaction) => reaction.blogPost)
+  reactions: Reaction[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
