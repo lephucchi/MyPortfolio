@@ -1,9 +1,15 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import axios from "axios"
 import type { BlogPost, Comment } from "../types"
 import { useAuth } from "../context/AuthContext"
+import { useTheme } from "../context/ThemeContext"
+import { Edit, Trash2, BookOpen } from "lucide-react"
+import Reactions from "./Reactions"
+import type { Reaction } from "../types"
 
 const Blog: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -13,8 +19,9 @@ const Blog: React.FC = () => {
   const [newComment, setNewComment] = useState<{ [key: number]: string }>({})
   const [error, setError] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
-  const [showAdminPanel, setShowAdminPanel] = useState<boolean>(false)
-  const { token, role } = useAuth()
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null) // State for detailed view
+  const { token } = useAuth()
+  const { isDark } = useTheme()
 
   useEffect(() => {
     fetchPosts()
@@ -28,6 +35,7 @@ const Blog: React.FC = () => {
       setError("")
     } catch (err: any) {
       setError("Failed to fetch blog posts")
+      console.error("Error fetching posts:", err)
     } finally {
       setLoading(false)
     }
@@ -35,9 +43,11 @@ const Blog: React.FC = () => {
 
   const fetchComments = async (postId: number) => {
     try {
-      const response = await axios.get(`http://localhost:5000/comments/${postId}`)
+      const response = await axios.get(`http://localhost:5000/comments/${postId}`) // Updated route
       setComments((prev) => ({ ...prev, [postId]: response.data }))
-    } catch {}
+    } catch (err: any) {
+      console.error("Error fetching comments:", err)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,11 +57,9 @@ const Blog: React.FC = () => {
       return
     }
     try {
-      await axios.post(
-        "http://localhost:5000/blog-posts",
-        newPost,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
+      await axios.post("http://localhost:5000/blog-posts", newPost, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       setNewPost({ title: "", content: "" })
       fetchPosts()
       setError("")
@@ -73,7 +81,7 @@ const Blog: React.FC = () => {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       )
       setEditingPost(null)
       fetchPosts()
@@ -105,11 +113,11 @@ const Blog: React.FC = () => {
         "http://localhost:5000/comments",
         {
           content: newComment[postId],
-          blogPostId: postId,
+          postId: postId,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       )
       setNewComment((prev) => ({ ...prev, [postId]: "" }))
       fetchComments(postId)
@@ -118,43 +126,191 @@ const Blog: React.FC = () => {
     }
   }
 
-  // Chỉ ADMIN mới được phép bật panel quản trị
-  const canEdit = role === "ADMIN" || role === "MODERATOR"
-  const isAdmin = role === "ADMIN"
+  const handleCommentDelete = async (commentId: number, postId: number) => {
+    if (!token || !confirm("Are you sure you want to delete this comment?")) return
+
+    try {
+      await axios.post(
+        `http://localhost:5000/comments/${commentId}/delete`, // Updated route
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
+      fetchComments(postId)
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to delete comment")
+    }
+  }
+
+  const handlePostReactionChange = (postId: number, newReactions: Reaction[]) => {
+    setPosts((prevPosts) => prevPosts.map((post) => (post.id === postId ? { ...post, reactions: newReactions } : post)))
+    if (selectedPost && selectedPost.id === postId) {
+      setSelectedPost((prev) => (prev ? { ...prev, reactions: newReactions } : null))
+    }
+  }
+
+  const handleCommentReactionChange = (commentId: number, newReactions: Reaction[]) => {
+    setComments((prevComments) => {
+      const updatedComments = { ...prevComments }
+      for (const postId in updatedComments) {
+        updatedComments[postId] = updatedComments[postId].map((comment) =>
+          comment.id === commentId ? { ...comment, reactions: newReactions } : comment,
+        )
+      }
+      return updatedComments
+    })
+    if (selectedPost) {
+      setSelectedPost((prev) => {
+        if (!prev) return null
+        return {
+          ...prev,
+          comments: prev.comments.map((comment) =>
+            comment.id === commentId ? { ...comment, reactions: newReactions } : comment,
+          ),
+        }
+      })
+    }
+  }
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading blog posts...</div>
+        <div className={`text-lg ${isDark ? "text-white" : "text-gray-900"}`}>Loading blog posts...</div>
       </div>
     )
   }
 
+  if (selectedPost) {
+    // Detailed Blog Post View
+    return (
+      <div
+        className={`p-8 rounded-2xl border ${isDark ? "bg-gray-800/80 border-gray-700" : "bg-white/80 border-gray-200"} backdrop-blur-sm`}
+      >
+        <button
+          onClick={() => setSelectedPost(null)}
+          className={`mb-6 flex items-center gap-2 px-4 py-2 rounded-lg ${
+            isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          } transition-colors`}
+        >
+          <BookOpen size={18} />
+          <span>Back to Blog List</span>
+        </button>
+
+        <h1 className={`text-4xl font-bold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>{selectedPost.title}</h1>
+        <p className={`text-gray-500 mb-6 text-sm`}>
+          By: {selectedPost.author?.name} • {new Date(selectedPost.createdAt).toLocaleDateString()}
+        </p>
+
+        <div className={`mb-8 ${isDark ? "text-gray-300" : "text-gray-600"} whitespace-pre-wrap`}>
+          {selectedPost.content}
+        </div>
+
+        {/* Reactions for the post */}
+        <div className="mb-8">
+          <Reactions
+            entityType="blogPost"
+            entityId={selectedPost.id}
+            initialReactions={selectedPost.reactions}
+            onReactionChange={(newReactions) => handlePostReactionChange(selectedPost.id, newReactions)}
+          />
+        </div>
+
+        {/* Comments Section */}
+        <div className="border-t pt-6 mt-6">
+          <h3 className={`text-2xl font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>Comments</h3>
+
+          {token && (
+            <div className="mb-6">
+              <div className="flex space-x-2">
+                <textarea
+                  value={newComment[selectedPost.id] || ""}
+                  onChange={(e) => setNewComment((prev) => ({ ...prev, [selectedPost.id]: e.target.value }))}
+                  placeholder="Add a comment..."
+                  rows={3}
+                  className={`flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"
+                  }`}
+                />
+                <button
+                  onClick={() => handleCommentSubmit(selectedPost.id)}
+                  className="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Comment
+                </button>
+              </div>
+            </div>
+          )}
+
+          {comments[selectedPost.id] && comments[selectedPost.id].length > 0 ? (
+            <div className="space-y-4">
+              {comments[selectedPost.id].map((comment) => (
+                <div
+                  key={comment.id}
+                  className={`p-4 rounded-lg ${isDark ? "bg-gray-700/50" : "bg-gray-50"} border ${
+                    isDark ? "border-gray-600" : "border-gray-200"
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <p className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}>{comment.user?.name}</p>
+                      <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                        {new Date(comment.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    {token && (
+                      <button
+                        onClick={() => handleCommentDelete(comment.id, selectedPost.id)}
+                        className="text-red-500 hover:text-red-700 p-1 rounded-full"
+                        aria-label="Delete comment"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <p className={`mb-3 ${isDark ? "text-gray-300" : "text-gray-600"}`}>{comment.content}</p>
+                  <Reactions
+                    entityType="comment"
+                    entityId={comment.id}
+                    initialReactions={comment.reactions}
+                    onReactionChange={(newReactions) => handleCommentReactionChange(comment.id, newReactions)}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={`text-center py-4 ${isDark ? "text-gray-400" : "text-gray-500"}`}>No comments yet.</p>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Blog Post List View
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Blog</h1>
+      <h1 className={`text-4xl md:text-6xl font-bold mb-6 text-center ${isDark ? "text-white" : "text-gray-900"}`}>
+        My <span className="text-blue-500">Blog</span>
+      </h1>
+      <p className={`text-xl mb-12 text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+        Thoughts, insights, and technical deep-dives
+      </p>
 
       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
 
-      {/* Nút Edit chỉ hiện với ADMIN */}
-      {isAdmin && (
-        <div className="flex justify-end mb-4">
-          <button
-            className={`px-4 py-2 rounded-md font-semibold ${showAdminPanel ? "bg-gray-500 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
-            onClick={() => setShowAdminPanel((prev) => !prev)}
-          >
-            {showAdminPanel ? "Hide Admin Panel" : "Edit"}
-          </button>
-        </div>
-      )}
-
-      {/* Panel quản trị chỉ hiện khi ADMIN bấm Edit */}
-      {token && canEdit && showAdminPanel && (
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4">{editingPost ? "Edit Post" : "Create New Post"}</h2>
-          <form onSubmit={editingPost ? handleEdit : handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+      {token && (
+        <div
+          className={`p-6 rounded-2xl shadow-md mb-12 ${isDark ? "bg-gray-800/80 border-gray-700" : "bg-white/80 border-gray-200"} backdrop-blur-sm`}
+        >
+          <h2 className={`text-2xl font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>
+            {editingPost ? "Edit Post" : "Create New Post"}
+          </h2>
+          <form onSubmit={editingPost ? handleEdit : handleSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="title"
+                className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              >
                 Title
               </label>
               <input
@@ -167,12 +323,17 @@ const Blog: React.FC = () => {
                     ? setEditingPost({ ...editingPost, title: e.target.value })
                     : setNewPost({ ...newPost, title: e.target.value })
                 }
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"
+                }`}
                 required
               />
             </div>
-            <div className="mb-4">
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+            <div>
+              <label
+                htmlFor="content"
+                className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              >
                 Content
               </label>
               <textarea
@@ -185,7 +346,9 @@ const Blog: React.FC = () => {
                     ? setEditingPost({ ...editingPost, content: e.target.value })
                     : setNewPost({ ...newPost, content: e.target.value })
                 }
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"
+                }`}
                 required
               />
             </div>
@@ -207,77 +370,58 @@ const Blog: React.FC = () => {
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {posts.map((post) => (
-          <div key={post.id} className="bg-white p-6 rounded-lg shadow-md">
+          <div
+            key={post.id}
+            className={`p-6 rounded-2xl shadow-md ${isDark ? "bg-gray-800/80 border-gray-700" : "bg-white/80 border-gray-200"} backdrop-blur-sm`}
+          >
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h2 className="text-2xl font-semibold mb-2">{post.title}</h2>
-                <p className="text-gray-600 whitespace-pre-wrap">{post.content}</p>
-                <p className="text-gray-500 mt-3 text-sm">
+                <h2 className={`text-2xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+                  {post.title}
+                </h2>
+                <p className={`text-gray-500 text-sm`}>
                   By: {post.author?.name} • {new Date(post.createdAt).toLocaleDateString()}
                 </p>
               </div>
-              {/* Chỉ hiện các nút Edit/Delete khi ADMIN bật panel */}
-              {token && canEdit && showAdminPanel && (
+              {token && (
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setEditingPost(post)}
                     className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600"
                   >
-                    Edit
+                    <Edit size={16} />
                   </button>
                   <button
                     onClick={() => handleDelete(post.id)}
                     className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
                   >
-                    Delete
+                    <Trash2 size={16} />
                   </button>
                 </div>
               )}
             </div>
-
-            {/* Comments Section */}
-            <div className="border-t pt-4 mt-4">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-lg font-medium">Comments</h3>
-                <button onClick={() => fetchComments(post.id)} className="text-blue-500 hover:text-blue-700 text-sm">
-                  Load Comments
-                </button>
-              </div>
-
-              {token && (
-                <div className="mb-4">
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={newComment[post.id] || ""}
-                      onChange={(e) => setNewComment((prev) => ({ ...prev, [post.id]: e.target.value }))}
-                      placeholder="Add a comment..."
-                      className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      onClick={() => handleCommentSubmit(post.id)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                    >
-                      Comment
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {comments[post.id] && (
-                <div className="space-y-2">
-                  {comments[post.id].map((comment) => (
-                    <div key={comment.id} className="bg-gray-50 p-3 rounded">
-                      <p className="text-gray-700">{comment.content}</p>
-                      <p className="text-gray-500 text-xs mt-1">
-                        By: {comment.user?.name} • {new Date(comment.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <p className={`text-gray-600 whitespace-pre-wrap line-clamp-3 mb-4 ${isDark ? "text-gray-300" : ""}`}>
+              {post.content}
+            </p>
+            <div className="flex items-center justify-between">
+              <Reactions
+                entityType="blogPost"
+                entityId={post.id}
+                initialReactions={post.reactions}
+                onReactionChange={(newReactions) => handlePostReactionChange(post.id, newReactions)}
+              />
+              <button
+                onClick={() => {
+                  setSelectedPost(post)
+                  fetchComments(post.id)
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors flex items-center gap-2"
+              >
+                <BookOpen size={16} />
+                <span>Read More</span>
+              </button>
             </div>
           </div>
         ))}
@@ -285,7 +429,7 @@ const Blog: React.FC = () => {
 
       {posts.length === 0 && !loading && (
         <div className="text-center py-8">
-          <p className="text-gray-500">No blog posts found.</p>
+          <p className={`text-gray-500 ${isDark ? "text-gray-400" : ""}`}>No blog posts found.</p>
         </div>
       )}
     </div>

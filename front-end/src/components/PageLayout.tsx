@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import { useTheme } from "../context/ThemeContext"
 
 interface PageLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode // For the initial summary section
   sections: {
     id: string
     title: string
@@ -20,6 +20,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, sections }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
   const scrollbarRef = useRef<HTMLDivElement>(null)
+  const initialSectionRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -38,24 +39,40 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, sections }) => {
       const scrollPercent = scrollTop / (docHeight - winHeight)
       setScrollProgress(scrollPercent)
 
-      // Find which section is currently in view
-      const currentSectionId = Object.entries(sectionRefs.current).find(([id, ref]) => {
-        if (!ref) return false
-        const rect = ref.getBoundingClientRect()
-        return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2
-      })?.[0]
-
-      if (currentSectionId) {
-        setActiveSection(currentSectionId)
+      // Determine active section
+      let currentActive = sections[0]?.id || ""
+      if (initialSectionRef.current) {
+        const initialRect = initialSectionRef.current.getBoundingClientRect()
+        if (initialRect.top <= window.innerHeight / 2 && initialRect.bottom >= window.innerHeight / 2) {
+          currentActive = "initial-summary" // Custom ID for the initial section
+        }
       }
+
+      for (const section of sections) {
+        const ref = sectionRefs.current[section.id]
+        if (ref) {
+          const rect = ref.getBoundingClientRect()
+          if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+            currentActive = section.id
+            break
+          }
+        }
+      }
+      setActiveSection(currentActive)
     }
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [sections])
 
   const scrollToSection = (sectionId: string) => {
-    const section = sectionRefs.current[sectionId]
+    let section: HTMLElement | null = null
+    if (sectionId === "initial-summary" && initialSectionRef.current) {
+      section = initialSectionRef.current
+    } else {
+      section = sectionRefs.current[sectionId]
+    }
+
     if (section) {
       section.scrollIntoView({
         behavior: "smooth",
@@ -67,7 +84,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, sections }) => {
   // Calculate scrollbar width based on scroll progress
   const getScrollbarWidth = () => {
     const maxWidth = 60 // percentage
-    const minWidth = 0.5 // percentage
+    const minWidth = 0.5 // percentage (for the dot)
     const width = maxWidth - scrollProgress * (maxWidth - minWidth)
     return `${Math.max(width, minWidth)}%`
   }
@@ -97,8 +114,8 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, sections }) => {
 
       {/* Main Content */}
       <div className="relative z-10">
-        {/* Summary Section */}
-        <section className="min-h-screen p-4 md:p-8">
+        {/* Initial Summary Section */}
+        <section ref={initialSectionRef} id="initial-summary" className="min-h-screen p-4 md:p-8">
           <div className="max-w-7xl mx-auto">{children}</div>
         </section>
 
@@ -107,11 +124,11 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, sections }) => {
           <section
             key={section.id}
             id={section.id}
-            ref={(el) => { sectionRefs.current[section.id] = el as HTMLDivElement | null }}
-            className="min-h-screen p-4 md:p-8 scroll-mt-16"
+            ref={(el) => { sectionRefs.current[section.id] = el as HTMLDivElement | null } }
+            className="min-h-screen p-4 md:p-8 scroll-mt-16 flex items-center justify-center" // Added flex for centering content
           >
             <div
-              className={`max-w-7xl mx-auto transition-all duration-1000 transform ${
+              className={`max-w-7xl mx-auto w-full transition-all duration-1000 transform ${
                 activeSection === section.id ? "opacity-100 translate-y-0" : "opacity-40 translate-y-8"
               }`}
             >
@@ -125,9 +142,23 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, sections }) => {
       <div
         className={`fixed top-1/2 right-8 transform -translate-y-1/2 z-30 ${
           isDark ? "text-gray-300" : "text-gray-700"
-        }`}
+        } hidden md:block`}
       >
         <div className="flex flex-col items-center space-y-4">
+          {/* Add initial summary to navigation */}
+          <button
+            onClick={() => scrollToSection("initial-summary")}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              activeSection === "initial-summary"
+                ? isDark
+                  ? "bg-blue-400 w-4 h-4"
+                  : "bg-blue-500 w-4 h-4"
+                : isDark
+                  ? "bg-gray-600 hover:bg-gray-500"
+                  : "bg-gray-300 hover:bg-gray-400"
+            }`}
+            aria-label={`Scroll to Summary`}
+          />
           {sections.map((section) => (
             <button
               key={section.id}

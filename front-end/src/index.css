@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -12,19 +13,6 @@
 @layer utilities {
   .pt-screen {
     padding-top: 100vh;
-  }
-
-  @keyframes orbit {
-    from {
-      transform: rotate(0deg) translateX(150px) rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg) translateX(150px) rotate(-360deg);
-    }
-  }
-
-  .animate-orbit {
-    animation: orbit 60s linear infinite;
   }
 
   @keyframes float {
@@ -53,6 +41,21 @@
 
   .animate-glow {
     animation: glow 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeInFromBottom {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInFromBottom 1s ease-out forwards;
   }
 }
 
