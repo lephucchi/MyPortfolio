@@ -1,47 +1,31 @@
 # Portfolio Project
 
-## Giới thiệu
+## Introduction
 
-Đây là dự án Portfolio cá nhân, bao gồm hệ thống quản lý bài viết, dự án, và chức năng gửi biểu cảm (react) lấy ý tưởng từ Facebook. Dự án được xây dựng với kiến trúc tách biệt back-end (NestJS) và front-end (ReactJS).
+This is a personal Portfolio project, including a system for managing posts, projects, and a reaction (react) feature. The project is built with a separated architecture: back-end (NestJS) and front-end (ReactJS).
 
----
+## Features
 
-## Mục lục
-
-- [Tính năng](#tính-năng)
-- [Cấu trúc dự án](#cấu-trúc-dự-án)
-- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
-- [Cài đặt](#cài-đặt)
-- [Chạy dự án](#chạy-dự-án)
-- [Cấu hình môi trường](#cấu-hình-môi-trường)
-- [Hướng dẫn sử dụng](#hướng-dẫn-sử-dụng)
-- [Đóng góp](#đóng-góp)
-- [Giấy phép](#giấy-phép)
+- Manage personal posts and projects.
+- User registration and login.
+- Send reactions (react) to posts and projects.
+- Manage and display the count of each reaction type.
+- Modern, user-friendly interface.
+- RESTful API, secured with JWT.
 
 ---
 
-## Tính năng
-
-- Quản lý bài viết, dự án cá nhân.
-- Đăng nhập, đăng ký người dùng.
-- Gửi biểu cảm (react) cho bài viết và dự án.
-- Quản lý và hiển thị số lượng từng loại react.
-- Giao diện hiện đại, thân thiện với người dùng.
-- API RESTful, bảo mật với JWT.
-
----
-
-## Cấu trúc dự án
+## Project Structure
 
 ```
 portfolio/
 │
-├── back-end/         # Source code back-end (NestJS)
+├── back-end/         # Back-end source code (NestJS)
 │   ├── src/
 │   ├── package.json
 │   └── ...
 │
-├── front-end/        # Source code front-end (ReactJS)
+├── front-end/        # Front-end source code (ReactJS)
 │   ├── src/
 │   ├── package.json
 │   └── ...
@@ -52,32 +36,32 @@ portfolio/
 
 ---
 
-## Yêu cầu hệ thống
+## System Requirements
 
 - Node.js >= 18.x
 - npm >= 9.x
-- Docker & Docker Compose (nếu sử dụng container)
-- Hệ quản trị cơ sở dữ liệu (PostgreSQL/MySQL/MongoDB, tùy cấu hình)
+- Docker & Docker Compose (if using containers)
+- Database system (PostgreSQL/MySQL/MongoDB, depending on configuration)
 
 ---
 
-## Cài đặt
+## Installation
 
-### 1. Clone dự án
+### 1. Clone the project
 
 ```bash
 git clone https://github.com/your-username/portfolio.git
 cd portfolio
 ```
 
-### 2. Cài đặt back-end
+### 2. Install back-end dependencies
 
 ```bash
 cd back-end
 npm install
 ```
 
-### 3. Cài đặt front-end
+### 3. Install front-end dependencies
 
 ```bash
 cd ../front-end
@@ -86,15 +70,15 @@ npm install
 
 ---
 
-## Chạy dự án
+## Running the Project
 
-### 1. Chạy bằng Docker Compose
+### 1. Run with Docker Compose
 
 ```bash
 docker-compose up --build
 ```
 
-### 2. Chạy thủ công
+### 2. Run manually
 
 #### Back-end
 
@@ -112,11 +96,11 @@ npm start
 
 ---
 
-## Cấu hình môi trường
+## Environment Configuration
 
 ### Back-end
 
-Tạo file `.env` trong thư mục `back-end` với nội dung ví dụ:
+Create a `.env` file in the `back-end` directory with the following example content:
 
 ```
 PORT=5000
@@ -126,7 +110,7 @@ JWT_SECRET=your_jwt_secret
 
 ### Front-end
 
-Tạo file `.env` trong thư mục `front-end` với nội dung ví dụ:
+Create a `.env` file in the `front-end` directory with the following example content:
 
 ```
 REACT_APP_API_URL=http://localhost:5000
@@ -134,22 +118,16 @@ REACT_APP_API_URL=http://localhost:5000
 
 ---
 
-## Hướng dẫn sử dụng
+## Usage Guide
 
-1. Truy cập giao diện người dùng tại `http://localhost:3000`.
-2. Đăng ký tài khoản và đăng nhập.
-3. Tạo bài viết hoặc dự án mới.
-4. Gửi biểu cảm (react) cho bài viết hoặc dự án.
-5. Xem thống kê các loại biểu cảm.
-
----
-
-## Đóng góp
-
-Chào mừng mọi đóng góp cho dự án! Vui lòng tạo pull request hoặc issue để thảo luận thêm.
+1. Access the user interface at `http://localhost:3000`.
+2. Register an account and log in.
+3. Create a new post or project.
+4. Send reactions (react) to posts or projects.
+5. View statistics of each reaction type.
 
 ---
 
-## Giấy phép
+## Contribution
 
-Dự án được phát hành theo giấy phép MIT. Vui lòng xem file [LICENSE](./LICENSE) để biết thêm chi tiết.
+All contributions are welcome! Please create a pull request or issue to discuss further.
