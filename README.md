@@ -2,23 +2,7 @@
 
 ## Giới thiệu
 
-Đây là dự án Portfolio cá nhân, bao gồm hệ thống quản lý bài viết, dự án, và chức năng gửi biểu cảm (react) lấy ý tưởng từ Facebook. Dự án được xây dựng với kiến trúc tách biệt back-end (NestJS) và front-end (ReactJS).
-
----
-
-## Mục lục
-
-- [Tính năng](#tính-năng)
-- [Cấu trúc dự án](#cấu-trúc-dự-án)
-- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
-- [Cài đặt](#cài-đặt)
-- [Chạy dự án](#chạy-dự-án)
-- [Cấu hình môi trường](#cấu-hình-môi-trường)
-- [Hướng dẫn sử dụng](#hướng-dẫn-sử-dụng)
-- [Đóng góp](#đóng-góp)
-- [Giấy phép](#giấy-phép)
-
----
+Đây là dự án Portfolio cá nhân, bao gồm hệ thống quản lý bài viết, dự án, và chức năng gửi biểu cảm (react). Dự án được xây dựng với kiến trúc tách biệt back-end (NestJS) và front-end (ReactJS).
 
 ## Tính năng
 
@@ -148,8 +132,3 @@ REACT_APP_API_URL=http://localhost:5000
 
 Chào mừng mọi đóng góp cho dự án! Vui lòng tạo pull request hoặc issue để thảo luận thêm.
 
----
-
-## Giấy phép
-
-Dự án được phát hành theo giấy phép MIT. Vui lòng xem file [LICENSE](./LICENSE) để biết thêm chi tiết.
