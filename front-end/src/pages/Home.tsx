@@ -39,8 +39,8 @@ const Home: React.FC = () => {
 
   const education = [
     {
-      degree: "Chuyên Toán Tin",
-      institution: "THPT Chuyên Nguyễn Du - Đắk Lắk",
+      degree: "Informatics Specialized Program",
+      institution: "Nguyen Du Specialized High School",
       period: "2018 - 2021",
       gpa: "7.5/10",
       description:

@@ -107,8 +107,7 @@ const AboutMe: React.FC = () => {
               <div className="flex-1 text-center md:text-left">
                 <h2 className={`text-2xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>About Me</h2>
                 <p className={`${isDark ? "text-gray-300" : "text-gray-600"} leading-relaxed mb-4`}>
-                  Passionate Data Engineer with 3+ years of experience building scalable data pipelines and robust
-                  backend systems. I love turning complex data into actionable insights.
+                  I'm passionate Data Engineer and Back-end Developer based in Ho Chi Minh City, Viet Nam 🇻🇳. I have a strong foundation in software engineering and data systems, with expertise in designing databases, building scalable ETL/ELT pipelines, and developing maintainable backend systems that are modular, testable, and built with scalability in mind. My focus is on optimizing data workflows and backend architectures for performance and scalability.
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                   <span className="px-3 py-1 bg-blue-500/20 text-blue-500 rounded-full text-sm">Data Engineering</span>
@@ -233,8 +232,8 @@ const AboutMe: React.FC = () => {
             <h3 className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>Education</h3>
             <div className="space-y-3">
               <div>
-                <h4 className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}>Chuyên Toán Tin</h4>
-                <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}> THPT Chuyên Nguyễn Du - Đắk Lắk</p>
+                <h4 className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}>Informatics Specialized Program</h4>
+                <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>Nguyen Du Specialized High School</p>
                 <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>2018 - 2021</p>
               </div>
               <div>
