@@ -18,6 +18,7 @@ const Home: React.FC = () => {
     { name: "html" },
     { name: "CSS" },
   ]
+  
   const FrameworkAndTool = [
     { name: "NestJs" },
     { name: "ExpressJs" },
