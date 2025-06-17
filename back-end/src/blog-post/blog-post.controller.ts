@@ -28,15 +28,6 @@ export class BlogPostController {
     return this.blogPostService.create(blogData, user);
   }
 
-  @Post('upload')
-  @Roles(Role.ADMIN, Role.MODERATOR)
-  @UseGuards(AuthGuard, RoleGuard)
-  @UseInterceptors(FileInterceptor('file')) 
-  async upload(@UploadedFile() file: Express.Multer.File){
-    return this.blogPostService.handleUpLoad(file);
-  }
-
-
   @Put(':id')
   @Roles(Role.ADMIN, Role.MODERATOR) // Only allow ADMIN and MODERATOR roles to create blog posts
   @UseGuards(AuthGuard, RoleGuard) // Assuming you have AuthGuard and RoleGuard set up

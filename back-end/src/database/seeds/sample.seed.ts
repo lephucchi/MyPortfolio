@@ -75,7 +75,6 @@ export class SampleSeed {
           title: 'E-commerce Platform',
           githubLink: 'https://github.com/sample/ecommerce',
           documentation: 'A full-stack e-commerce platform with payment integration.',
-          thumbnail: '/uploads/thumbnails/ecommerce.jpg',
           technologies: 'React, Node.js, PostgreSQL, Stripe',
           user: adminUser,
           createdAt: new Date(),

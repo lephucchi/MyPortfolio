@@ -21,15 +21,13 @@ export class ProjectController {
     return this.projectService.findById(id);
   }
 
-  @Post('create')
+  @Post()
   @Roles(Role.ADMIN, Role.MODERATOR)
   @UseGuards(AuthGuard, RoleGuard)
-  @UseInterceptors(FileInterceptor('thumbnail'))
   async create(
     @Body() projectData: CreateProjectDto,
-    @UploadedFile() thumbnail: Express.Multer.File,
   ): Promise<Project> {
-    return this.projectService.create(projectData, thumbnail);
+    return this.projectService.create(projectData);
   }
 
   @Post('update/:id')

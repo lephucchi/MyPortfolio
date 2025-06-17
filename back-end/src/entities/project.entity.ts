@@ -18,9 +18,6 @@ export class Project {
   technologies: string;
 
   @Column({ nullable: true })
-  thumbnail: string; // Đường dẫn đến ảnh thumbnail
-
-  @Column({ nullable: true })
   githubLink: string; // Liên kết GitHub
 
   @Column({ type: 'text', nullable: true })

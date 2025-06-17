@@ -28,22 +28,9 @@ export class ProjectService {
 
   async create(
     projectDto: CreateProjectDto,
-    thumbnailFile: Express.Multer.File,
   ): Promise<Project> {
-    if (!thumbnailFile) {
-      throw new Error('Thumbnail file is required');
-    }
-    const allowedMimeTypes = ['image/jpeg', 'image/png'];
-    if (!allowedMimeTypes.includes(thumbnailFile.mimetype)) {
-      throw new Error('Invalid file type. Only JPEG and PNG are allowed.');
-    }
-    const maxFileSize = 10 * 1024 * 1024; // 10 MB
-    if (thumbnailFile.size > maxFileSize) {
-      throw new Error('File size exceeds the maximum limit of 10 MB');
-    }
     const project = this.projectRepository.create({
       ...projectDto,
-      thumbnail: thumbnailFile.filename,
     });
 
     return this.projectRepository.save(project);

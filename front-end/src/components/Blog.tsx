@@ -57,7 +57,7 @@ const Blog: React.FC = () => {
       return
     }
     try {
-      await axios.post("http://localhost:5000/blog-posts", newPost, {
+      await axios.post("http://localhost:5000/blog-posts/upload", newPost, {
         headers: { Authorization: `Bearer ${token}` },
       })
       setNewPost({ title: "", content: "" })

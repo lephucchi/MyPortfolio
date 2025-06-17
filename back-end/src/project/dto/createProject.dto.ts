@@ -11,10 +11,6 @@ export class CreateProjectDto {
   technologies: string;
 
   @IsOptional()
-  @IsString()
-  thumbnail?: string; // Đường dẫn đến ảnh thumbnail
-
-  @IsOptional()
   @IsUrl()
   githubLink?: string; // Liên kết GitHub
 
